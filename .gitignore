@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+.env.*
+
+# FastAPI / Python cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Database
+*.sqlite3
+*.db
+
+# Uploaded/temp files
+uploads/
+tmp/
+temp/
+
+# Images / PDFs accidentally copied into project
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.pdf
