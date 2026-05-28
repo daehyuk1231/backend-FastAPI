@@ -89,12 +89,14 @@ app.include_router(httpmethod_controller.router)
 from api.receivedata import controller as receivedata_controller
 app.include_router(receivedata_controller.router)
 
+from api.validation import controller as validation_controller
+app.include_router(validation_controller.router)
+
 # ============================================
 # 애플리케이션 시작
 # ============================================
 if __name__ == "__main__":
     logger.info("유비콘 서버를 구동해서 FastAPI 애플리케이션을 실행")
-    logger.error("유비콘 서버를 구동해서 FastAPI 애플리케이션을 실행")
     uvicorn.run(
         # 유비콘(비동기 서버)가 실행할 애플리케이션
         # reload=False일 경우: app을 제공할 수 있음

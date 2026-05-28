@@ -39,11 +39,11 @@ async def fun_query(
 
 @router.get("/fun-path/{member_id}/{board_no}")
 async def fun_path(
-    mid: Annotated[str, Path(alias="member_id")],
-    bno: Annotated[int, Path(alias="board_no")]
+    member_id: Annotated[str, Path()],
+    board_no: Annotated[int, Path()]
 ):
-    logger.info(f"mid: {mid}, bno: {bno}")
-    return {"mid": mid, "bno": bno}
+    logger.info(f"member_id: {member_id}, board_no: {board_no}")
+    return {"member_id": member_id, "board_no": board_no}
 
 # 요청 본문: json
 @router.post("/fun-body")
