@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 import logging
 
 import colorlog
@@ -6,7 +7,17 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
+from api.database.config.dbsession import engine
 
+# ============================================
+# 애플리케이션 시작과 종료시 실행해야할 코드
+# ============================================
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("애플리케이션 시작")
+    yield
+    logger.info("애플리케이션 종료, 커넥션 풀 안전 종료")
+    await engine.dispose()
 
 # ============================================
 # FastAPI 애플리케이션 인스턴스 생성
@@ -14,7 +25,8 @@ import uvicorn
 app = FastAPI(
     title="FastAPI 백엔드",
     description="FastAPI를 학습하기 위한 프로젝트",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # ============================================
@@ -104,8 +116,8 @@ app.include_router(exception_controller.router)
 # ============================================
 # 전역 예외 처리기 등록
 # ============================================
-from api.exception.handler import register_exception_handler
-register_exception_handler(app)
+# from api.exception.handler import register_exception_handler
+# register_exception_handler(app)
 
 # ============================================
 # 애플리케이션 시작
