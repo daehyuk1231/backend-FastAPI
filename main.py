@@ -98,6 +98,9 @@ app.include_router(returntype_controller.router)
 from api.di import controller as di_controller
 app.include_router(di_controller.router)
 
+from api.exception import controller as exception_controller
+app.include_router(exception_controller.router)
+
 # ============================================
 # 전역 예외 처리기 등록
 # ============================================

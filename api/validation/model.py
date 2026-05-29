@@ -1,6 +1,7 @@
 import re
 from typing import Annotated, Self
 
+from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 
 # =======================================
@@ -20,16 +21,16 @@ class MemberJoinRequest(BaseModel):
     def password_check(cls, v: str) -> str:
         """비밀번호에 영문·숫자·특수문자가 각각 1자 이상 포함되어야 함"""
         if not re.search(r'[A-Za-z]', v):
-            raise ValueError("비밀번호에 영문자가 1자 이상 포함되어야 합니다.")
+            raise RequestValidationError("비밀번호에 영문자가 1자 이상 포함되어야 합니다.")
         if not re.search(r'\d', v):
-            raise ValueError("비밀번호에 숫자가 1자 이상 포함되어야 합니다.")
+            raise RequestValidationError("비밀번호에 숫자가 1자 이상 포함되어야 합니다.")
         if not re.search(r'[!@#$%^&*(),.?\":{}|<>]', v):
-            raise ValueError("비밀번호에 특수문자가 1자 이상 포함되어야 합니다.")
+            raise RequestValidationError("비밀번호에 특수문자가 1자 이상 포함되어야 합니다.")
         return v
     
     @model_validator(mode="after")
     def password_match(self) -> Self:
         """비밀번호와 비밀번호 확인이 일치해야 함"""
         if self.mpassword != self.mpassword_confirm:
-            raise ValueError("비밀번호와 비밀번호 확인이 일치하지 않습니다.")
+            raise RequestValidationError("비밀번호와 비밀번호 확인이 일치하지 않습니다.")
         return self
