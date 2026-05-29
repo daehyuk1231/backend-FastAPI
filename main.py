@@ -92,6 +92,18 @@ app.include_router(receivedata_controller.router)
 from api.validation import controller as validation_controller
 app.include_router(validation_controller.router)
 
+from api.returntype import controller as returntype_controller
+app.include_router(returntype_controller.router)
+
+from api.di import controller as di_controller
+app.include_router(di_controller.router)
+
+# ============================================
+# 전역 예외 처리기 등록
+# ============================================
+from api.exception.handler import register_exception_handler
+register_exception_handler(app)
+
 # ============================================
 # 애플리케이션 시작
 # ============================================
