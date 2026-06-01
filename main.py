@@ -8,12 +8,16 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
 from api.database.config.dbsession import engine
+from api.database.config.entity_base import Base
 
 # ============================================
 # 애플리케이션 시작과 종료시 실행해야할 코드
 # ============================================
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # 테이블 자동 생성
+    # async with engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.create_all)
     logger.info("애플리케이션 시작")
     yield
     logger.info("애플리케이션 종료, 커넥션 풀 안전 종료")
@@ -112,6 +116,9 @@ app.include_router(di_controller.router)
 
 from api.exception import controller as exception_controller
 app.include_router(exception_controller.router)
+
+from api.database.member import controller as member_controller
+app.include_router(member_controller.router)
 
 # ============================================
 # 전역 예외 처리기 등록
