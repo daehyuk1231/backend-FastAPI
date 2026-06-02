@@ -41,3 +41,23 @@ class MemberLoginRequest(BaseModel):
 class MemberLoginResponse(BaseModel):
     mid: str # 필수값
     accessToken: str # 필수값
+    
+# --------------------------------------------
+# 회원 조회 응답 모델
+# --------------------------------------------
+class MemberResponse(BaseModel):
+    mid: str
+    mname: str
+    mpassword: str
+    menabled: bool
+    mrole: str
+    memail: str
+    model_config = ConfigDict(from_attributes=True)
+    
+# --------------------------------------------
+# 회원 수정 요청 모델
+# --------------------------------------------
+class MemberModifyRequest(BaseModel):
+    mpassword: Annotated[str|None, Field(min_length=5, max_length=20)] = None # 옵션값
+    menabled: bool | None = None # 옵션값
+    memail: EmailStr | None = None # 옵션값

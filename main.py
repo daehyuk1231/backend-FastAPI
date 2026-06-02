@@ -120,6 +120,9 @@ app.include_router(exception_controller.router)
 from api.database.member import controller as member_controller
 app.include_router(member_controller.router)
 
+from api.database.board import controller as board_controller
+app.include_router(board_controller.router)
+
 # ============================================
 # 전역 예외 처리기 등록
 # ============================================

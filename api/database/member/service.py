@@ -37,7 +37,23 @@ class MemberService:
                 error_code="A0006"
             )
         return member_entity
-        
+    
+    # 회원 조회 비즈니스 메소드
+    async def read(self, mid: str) -> MemberEntity | None:
+        self.logger.info("실행")
+        member_entity = await self.member_dao.select_by_mid(mid)
+        return member_entity
+    
+    # 회원 수정 비즈니스 메소드
+    async def modify(self, member_entity: MemberEntity) -> MemberEntity:
+        if member_entity.mpassword is not None:
+            member_entity.mpassword = self.pwd_context.hash(member_entity.mpassword)
+        member_entity = await self.member_dao.update(member_entity)
+        return member_entity
+    
+    # 회원 삭제 비즈니스 메소드
+    async def remove(self, mid: str) -> None:
+        return await self.member_dao.delete_by_mid(mid)
 # ------------------------------------------------
 # 의존성 타입 별칭 정의
 # ------------------------------------------------
