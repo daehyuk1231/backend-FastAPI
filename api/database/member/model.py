@@ -27,3 +27,17 @@ class MemberJoinResponse(BaseModel):
     # - from_attributes=False (기본값): dict, 다른 Pydantic 모델만 허용
     # - from_attributes=True: ORM, dict, @dataclass, 일반 객체 등 .속성명으로 접근 가능한 모든 객체 허용
     model_config = ConfigDict(from_attributes=True)
+    
+# --------------------------------------------
+# 회원 가입 응답 모델 정의
+# --------------------------------------------
+class MemberLoginRequest(BaseModel):
+    mid: Annotated[str, Field(min_length=4, max_length=20)] # 필수값
+    mpassword: Annotated[str, Field(min_length=5, max_length=20)] # 필수값
+    
+# --------------------------------------------
+# 회원 로그인 응답 모델 정의
+# --------------------------------------------
+class MemberLoginResponse(BaseModel):
+    mid: str # 필수값
+    accessToken: str # 필수값

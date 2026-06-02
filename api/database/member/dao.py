@@ -22,6 +22,11 @@ class MemberDao:
         await self.orm_session.refresh(member_entity)
         # 저장된 회원 정보를 반환
         return member_entity
+    
+    # 회원 조회
+    async def select_by_mid(self, mid: str) -> MemberEntity | None:
+        member_entity = await self.orm_session.get(MemberEntity, mid)
+        return member_entity
         
 # ------------------------------------------------
 # 의존성 타입 별칭 정의

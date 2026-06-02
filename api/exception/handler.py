@@ -3,6 +3,8 @@ import logging
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from api.database.member.exception import MemberLoginError
+
 logger = logging.getLogger(__name__)
 
 # =================================================
@@ -60,6 +62,13 @@ async def general_exception_handler(request: Request, e: Exception):
         "detail": str(e)
     })
     
+async def member_login_exception_handler(request: Request, e: MemberLoginError):
+    return JSONResponse({
+        "error_code": e.error_code,
+        "message": "로그인 실패",
+        "detail": str(e)
+    })
+    
 # =================================================
 # 예외 처리기 일괄 등록 함수
 # =================================================
@@ -68,4 +77,5 @@ def register_exception_handler(app: FastAPI):
     app.exception_handler(RequestValidationError)(validation_exception_handler)
     app.exception_handler(HTTPException)(http_exception_handler)
     app.exception_handler(BusinessException)(business_exception_handler)
+    app.exception_handler(MemberLoginError)(member_login_exception_handler)
     app.exception_handler(Exception)(general_exception_handler)

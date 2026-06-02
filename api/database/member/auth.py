@@ -40,6 +40,7 @@ def create_token(mid: str, mrole: str) -> str:
 # - tokenUrl: 토큰 발급 URL (로그인 API 엔드포인트) 지정
 #   문서용 메타데이터(Swagger Authorize 버튼에서 토큰 받는 경우 안내)일 뿐, 
 #   토큰을 "그 URL에서 가져온다"는 뜻이 아님
+# - 요청 헤더에 Authorization: Barer xxxx 에서 xxx를 추출하는 역할
 # - auto_error: 토큰이 없을 경우 에러 발생 여부
 #   True(기본값) - 토큰 없으면, 자체 401 응답 처리
 #   False - 토큰이 없으면 None 반환 (verify_token 함수에서 직접 처리) 
@@ -53,7 +54,7 @@ _oauth2_scheme = OAuth2PasswordBearer(
 # ---------------------------------------------
 def get_payload(token: str) -> dict:
     try:
-        payload = jwt.decode(token, _SECRET_KEY, algorithm=_ALGORITHM)
+        payload = jwt.decode(token, _SECRET_KEY, algorithms=[_ALGORITHM])
         if "sub" not in payload:
             raise jwt.MissingRequiredClaimError("토큰안에 회원 아이디가 없음")
         return payload
@@ -80,3 +81,30 @@ async def verify_access_token(
                             detail="토큰이 없음")
     payload = get_payload(access_token)
     return payload
+
+# ---------------------------------------------
+# 권한 체크 의존성 함수(Depends용)
+# ---------------------------------------------
+# Depends()는 매개변수가 없거나, 의존 주입 매개변수가 있는 의존성 함수만 제공해야함 
+# - 명시적인 값을 제공해야하는 함수일 경우에는 함수 호출 형태로 작성하되
+# - 반환값은 매개변수가 없거나 의존 주입 매개변수가 있는 의존성 함수여야함
+# - 그래서 중첩 함수 형태로 작성
+def require_roles(roles: list[str] = ["ROLE_USER"]):
+    # 중첩 함수 정의
+    async def check_roles(payload: Annotated[dict, Depends(verify_access_token)]) -> dict:
+        user_role = payload.get("mrole")
+        if user_role not in roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"필요한 권한: {roles}, 현재 권한: {user_role}"
+            )
+        # 실제 주입될 값
+        return payload;
+    # 반환값
+    return check_roles
+
+# ---------------------------------------------
+# 의존성 타입 별칭 정의 (Controller에서 적용)
+# ---------------------------------------------
+LoginCheckDep = Annotated[dict, Depends(verify_access_token)]
+AdminCheckDep = Annotated[dict, Depends(require_roles(["ROLE_ADMIN", "ROLE_MANAGER"]))]

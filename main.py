@@ -123,8 +123,8 @@ app.include_router(member_controller.router)
 # ============================================
 # 전역 예외 처리기 등록
 # ============================================
-# from api.exception.handler import register_exception_handler
-# register_exception_handler(app)
+from api.exception.handler import register_exception_handler
+register_exception_handler(app)
 
 # ============================================
 # 애플리케이션 시작
