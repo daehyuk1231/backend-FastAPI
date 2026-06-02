@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import Depends
 from sqlalchemy import func, select, text
@@ -21,6 +21,7 @@ class BoardDao:
     async def select_count(self) -> int:
         result = await self.orm_session.execute(
             select(func.count(BoardEntity.bno))
+                .where(BoardEntity.bno <= 50)
         )
         # result = await self.orm_session.execute(
         #     text("SELECT COUNT(bno) FROM board")
@@ -47,24 +48,28 @@ class BoardDao:
                         BoardEntity.battachtype,
                     )
                 )
+                .where(BoardEntity.bno <= 50)
                 # bno를 기준으로 내림차순 정렬
-                .order_by(BoardEntity.bno)
+                .order_by(BoardEntity.bno.desc())
                 # 페이징 처리
                 .limit(pager.rows_per_page)
                 .offset(pager.start_row_index)
         )
-        
-        # result = await self.orm_session.execute(
-        #     text("""
-        #         SELECT bno, btitle, bwriter, bdate, bhitcount, battachoname, battachtype 
-        #         FROM board 
-        #         ORDER BY bno DESC 
-        #         LIMIT :limit OFFSET :offset
-        #         """),
-        #     {"limit": pager.rows_per_page, "offset": pager.start_row_index}
-        # )
-        
         return list(result.scalars().all())
+    
+    # async def select_by_page(self, pager: Pager) -> list[dict[str, Any]]:
+    #     result = await self.orm_session.execute(
+    #         text("""
+    #             SELECT bno, btitle, bwriter, bdate, bhitcount, battachoname, battachtype 
+    #             FROM board 
+    #             ORDER BY bno DESC 
+    #             LIMIT :limit OFFSET :offset
+    #             """), 
+    #         {"limit": pager.rows_per_page, "offset": pager.start_row_index}
+    #     )
+
+    #     # RowMapping 객체를 일반 dict로 변환해서 상위 계층에서 DTO로 명시 매핑한다.
+    #     return [dict(row) for row in result.mappings().all()]
         
 # -----------------------------------------------
 # 의존성 타입 별칭 정의

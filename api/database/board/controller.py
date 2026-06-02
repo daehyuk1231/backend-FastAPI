@@ -18,7 +18,10 @@ router = APIRouter(prefix="/database/board", tags=["board"])
 @router.get("/list",
             response_class=JSONResponse,
             response_model=BoardListResponse,
-            response_model_exclude_none=True)
+            # 특정값으로 세팅이 되지 않은 필드를 제거하고 응답을 보냄
+            response_model_exclude_none=True,
+            # 목록 내부 항목에서 특정 필드값을 제거하고 응답을 보낼때
+            response_model_exclude={"boards": {"__all__": {"bdate", "bhitcount"}}})
 async def list(board_service: BoardServiceDep, page_no: int = 1) -> BoardListResponse:
     # 페이징 대상이 되는 전체 행의 수를 DB에서 가져오기
     total_rows = await board_service.get_total_rows()

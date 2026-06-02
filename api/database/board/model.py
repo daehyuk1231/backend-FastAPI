@@ -86,7 +86,6 @@ class BoardListItemResponse(BaseModel):
     bdate: datetime
     bhitcount: int
     battachoname: str | None = None
-    # battachsname: str | None = None
     battachtype: str | None  = None
     model_config = ConfigDict(from_attributes=True) # 엔티티로 dto 자동 생성
     

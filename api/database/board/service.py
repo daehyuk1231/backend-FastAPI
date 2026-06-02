@@ -21,10 +21,14 @@ class BoardService:
         return total_count
     
     # 해당 페이지의 게시물 목록 가져오기
-    async def list(self, pager: Pager) -> list[BoardEntity]:
+    # async def list(self, pager: Pager) -> list[BoardEntity]:
+    #     list_board_entity = await self.board_dao.select_by_page(pager)
+    #     return list_board_entity
+
+    async def list(self, pager: Pager) -> list[dict]:
         list_board_entity = await self.board_dao.select_by_page(pager)
         return list_board_entity
-        
+    
 # -----------------------------------------------
 # 의존성 타입 별칭 정의
 # -----------------------------------------------
