@@ -21,13 +21,35 @@ class BoardService:
         return total_count
     
     # 해당 페이지의 게시물 목록 가져오기
-    # async def list(self, pager: Pager) -> list[BoardEntity]:
-    #     list_board_entity = await self.board_dao.select_by_page(pager)
-    #     return list_board_entity
-
-    async def list(self, pager: Pager) -> list[dict]:
+    async def list(self, pager: Pager) -> list[BoardEntity]:
         list_board_entity = await self.board_dao.select_by_page(pager)
         return list_board_entity
+
+    # async def list(self, pager: Pager) -> list[dict]:
+    #     list_board_entity = await self.board_dao.select_by_page(pager)
+    #     return list_board_entity
+    
+    # 게시물 쓰기
+    async def create(self, board_entity: BoardEntity) -> BoardEntity:
+        self.logger.info("실행")
+        board_entity = await self.board_dao.insert(board_entity)
+        return board_entity
+    
+    async def read(self, bno:int, bhitcount: bool = False) -> BoardEntity | None:
+        self.logger.info("실행")
+        board_entity = await self.board_dao.select_by_bno(bno)
+        if bhitcount and board_entity is not None:
+            board_entity = await self.board_dao.update_hitcount(board_entity)
+        return board_entity
+    
+    async def modify(self, board_entity: BoardEntity) -> BoardEntity:
+        self.logger.info("실행")
+        board_entity = await self.board_dao.update(board_entity)
+        return board_entity
+    
+    async def remove(self, bno: int) -> bool:
+        self.logger.info("실행")
+        return await self.board_dao.delete_by_bno(bno)
     
 # -----------------------------------------------
 # 의존성 타입 별칭 정의

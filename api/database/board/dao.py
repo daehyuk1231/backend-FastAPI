@@ -2,7 +2,7 @@ import logging
 from typing import Annotated, Any
 
 from fastapi import Depends
-from sqlalchemy import func, select, text
+from sqlalchemy import delete, func, select, text
 from sqlalchemy.orm import load_only
 
 from api.database.board.entity import BoardEntity
@@ -70,7 +70,66 @@ class BoardDao:
 
     #     # RowMapping 객체를 일반 dict로 변환해서 상위 계층에서 DTO로 명시 매핑한다.
     #     return [dict(row) for row in result.mappings().all()]
+    
+    async def insert(self, entity: BoardEntity) -> BoardEntity:
+        self.logger.info("실행")
+        self.orm_session.add(entity)
         
+        await self.orm_session.flush()
+        await self.orm_session.refresh(entity)
+        return entity
+    
+    async def select_by_bno(self, bno: int) -> BoardEntity | None:
+        self.logger.info("실행")
+        board_entity = await self.orm_session.get(BoardEntity, bno)
+        return board_entity
+    
+    async def update_hitcount(self, board_entity: BoardEntity) -> BoardEntity:
+        self.logger.info("실행")
+        board_entity.bhitcount += 1
+        await self.orm_session.flush()
+        return board_entity
+    
+    async def update(self, entity: BoardEntity) -> BoardEntity:
+        self.logger.info("실행")
+
+        db_board_entity = await self.orm_session.get(BoardEntity, entity.bno)
+        
+        if db_board_entity is None:
+            raise Exception("게시글을 찾을 수 없습니다.")
+        
+        if entity.btitle is not None:
+            db_board_entity.btitle = entity.btitle
+        
+        if entity.bcontent is not None:
+            db_board_entity.bcontent = entity.bcontent
+            
+        if entity.battachoname is not None:
+            db_board_entity.battachoname = entity.battachoname
+            db_board_entity.battachsname = entity.battachsname
+            db_board_entity.battachtype = entity.battachtype
+            db_board_entity.battachdata = entity.battachdata
+            
+        await self.orm_session.flush()
+        await self.orm_session.refresh(db_board_entity)
+        
+        return db_board_entity
+    
+    async def delete_by_bno(self, bno: int) -> bool:
+        self.logger.info("실행")
+        
+        # board_entity = await self.orm_session.get(BoardEntity, bno)
+        # if board_entity:
+        #     await self.orm_session.delete(board_entity)
+        #     return True
+        # else:
+        #     return False
+        
+        result = await self.orm_session.execute(
+            delete(BoardEntity).where(BoardEntity.bno == bno)
+        )
+        return result.rowcount > 0
+            
 # -----------------------------------------------
 # 의존성 타입 별칭 정의
 # -----------------------------------------------

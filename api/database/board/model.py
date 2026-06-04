@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Self
 
+from fastapi import UploadFile
 from pydantic import BaseModel, ConfigDict
 
 # ------------------------------------------
@@ -95,3 +96,33 @@ class BoardListItemResponse(BaseModel):
 class BoardListResponse(BaseModel):
     pager: Pager
     boards: list[BoardListItemResponse]
+    
+# ------------------------------------------------
+# 게시물 쓰기 요청용 모델
+# ------------------------------------------------
+class BoardWriteRequest(BaseModel):
+    btitle: str
+    bcontent: str | None = None
+    battach: UploadFile | None  = None
+
+# ------------------------------------------------
+# 게시물 상세 조회용 모델 (대용량 필드 포함)
+# ------------------------------------------------
+class BoardResponse(BaseModel):
+    bno: int
+    btitle: str
+    bcontent: str | None = None
+    bwriter: str
+    bdate: datetime
+    bhitcount: int
+    battachoname: str | None = None
+    battachsname: str | None = None
+    battachtype: str | None = None
+    battachdata: bytes | None = None    
+    model_config = ConfigDict(from_attributes=True)
+    
+class BoardUpdateRequest(BaseModel):
+    bno: int
+    btitle: str
+    bcontent: str | None = None
+    battach: UploadFile | None = None
